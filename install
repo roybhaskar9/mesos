@@ -1,0 +1,26 @@
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
+DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+CODENAME=$(lsb_release -cs)
+echo "deb http://repos.mesosphere.io/${DISTRO} ${CODENAME} main" | sudo tee /etc/apt/sources.list.d/mesosphere.list
+sudo apt-get -y update
+sudo apt-get -y install mesos marathon
+sudo nano /etc/default/marathon
+=== Enter These Lines ===
+MARATHON_MASTER="zk://localhost:2181/mesos"
+MARATHON_ZK="zk://localhost:2181/marathon"
+MARATHON_MESOS_USER="root"
+=== Save and Close the File ===
+
+sudo service zookeeper start
+sudo service mesos-master start
+sudo service mesos-slave start
+sudo service marathon start
+sudo service zookeeper restart
+sudo service mesos-master restart
+sudo service mesos-slave restart
+sudo service marathon restart
+
+Now open web browser and visit http://serverip:5050 for mesos interface
+and visit http://serverip:8080 for marathon interface
+on Mesos Interface under fameworks tab, Marathon shows up as a framework
+Under Agent tab, the same system shows up as Agent node
