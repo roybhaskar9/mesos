@@ -1,0 +1,14 @@
+
+Setting up Docker Support
+===========================
+cat <<EOF >> /etc/mesos-slave/containerizers
+docker,mesos
+EOF
+
+cat <<EOF >> /etc/mesos-slave/image_providers
+docker
+EOF
+
+cat <<EOF >> /etc/mesos-slave/isolation
+filesystem/linux,docker/runtime
+EOF
