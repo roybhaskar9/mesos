@@ -1,0 +1,31 @@
+Using CLI to Launch Application
+=================================
+MASTER=$(mesos-resolve `cat /etc/mesos/zk`)
+mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 5"
+
+Open up Mesos interface on http://serverip:5050 and you can see cluster-test deployment listed
+under Frameworks -> Completed Frameworks --> Click on the 001 instance --> inside you can see completed task with
+name as cluster-test
+
+Using API to Launch Application
+================================
+curl -X POST http://localhost:8080/v2/apps -d @APIAPP.json -H "Content-type: application/json"
+Content of APIAPP.json
+{
+    "id": "APIAPP
+    "cmd": "while [ true ] ; do echo 'Hello Marathon' ; sleep 5 ; done",
+    "cpus": 0.1,
+    "mem": 10.0,
+    "instances": 1
+}
+
+Using GUI to Launch Application
+================================
+Marathon create application -> JSON mode -> 
+{
+    "id": "GUIAPP", 
+    "cmd": "while [ true ] ; do echo 'Hello Marathon' ; sleep 5 ; done",
+    "cpus": 0.1,
+    "mem": 10.0,
+    "instances": 1
+}
