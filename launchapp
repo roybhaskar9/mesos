@@ -12,7 +12,7 @@ Using API to Launch Application
 curl -X POST http://localhost:8080/v2/apps -d @APIAPP.json -H "Content-type: application/json"
 Content of APIAPP.json
 {
-    "id": "APIAPP
+    "id": "apiapp",
     "cmd": "while [ true ] ; do echo 'Hello Marathon' ; sleep 5 ; done",
     "cpus": 0.1,
     "mem": 10.0,
@@ -23,7 +23,7 @@ Using GUI to Launch Application
 ================================
 Marathon create application -> JSON mode -> 
 {
-    "id": "GUIAPP", 
+    "id": "guiapp", 
     "cmd": "while [ true ] ; do echo 'Hello Marathon' ; sleep 5 ; done",
     "cpus": 0.1,
     "mem": 10.0,
