@@ -1,0 +1,35 @@
+=========Chapter 1===============================================
+https://techpolymath.com/2014/08/31/build-mesos-multi-node-ha-cluster/
+=================================================================
+Lesson 14: Multimaster setup
+Lesson 15: Multi Master Multi Slave setup
+=================================================================
+####################################################################
+=========Chapter 2===============================================
+https://github.com/roybhaskar9/mesos/blob/master/tomcat.json
+https://github.com/roybhaskar9/mesos/blob/master/tomcatdocker.json
+=================================================================
+Lesson 16: Deploying tomcat on Mesos
+=================================================================
+####################################################################
+=========Chapter 3===============================================
+Already Done
+=================================================================
+Lesson 17: Exposing an application on publicly accessible port
+=================================================================
+####################################################################
+=========Chapter 4===============================================
+http://alexjoh.blogspot.in/2017/04/install-dcos-on-centos-7.html
+=================================================================
+Lesson 18: Implementing DCOS 1m-1a-1p setup
+Lesson 19: Installing DCOS CLI
+=================================================================
+###################################################################
+=========Chapter 4===============================================
+http://alexjoh.blogspot.in/2017/04/install-dcos-on-centos-7.html
+=================================================================
+Lesson 20: Application deployment & management using DCOS CLI
+Lesson 21: Introduction to Marathon Load Balancer
+Lesson 22: Running applications with load balancing in Marathon
+Lesson 23: Understaning Virtual Hosts
+Lesson 24: Logging
