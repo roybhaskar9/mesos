@@ -2,9 +2,11 @@ Using CLI to Launch Application
 =================================
 MASTER=$(mesos-resolve `cat /etc/mesos/zk`)
 mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 5"
+or
+mesos-execute --master="localhost:5050" --name="test-exec" --command="sleep 10"
 
 Open up Mesos interface on http://serverip:5050 and you can see cluster-test deployment listed
-under Frameworks -> Completed Frameworks --> Click on the 001 instance --> inside you can see completed task with
+under Frameworks ->Active or Completed Frameworks --> Click on the 001 instance --> inside you can see completed task with
 name as cluster-test
 
 Using API to Launch Application
@@ -29,3 +31,54 @@ Marathon create application -> JSON mode ->
     "mem": 10.0,
     "instances": 1
 }
+
+
+
+To run Tomcat using Mesos Containerizer
+========================================
+{
+  "id": "tomcatmesos",
+  "cmd": "tar -xvzf apache*.tar.gz && mv *.war apache-tomcat-*/webapps && cd apache-tomcat-* && sed s/8080/8282/g < ./conf/server.xml > ./conf/server-mesos.xml && ./bin/catalina.sh run -config ./conf/server-mesos.xml",
+  "mem": 512,
+  "cpus": 0.1,
+  "instances": 1,
+  "uris": [
+    "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.69/bin/apache-tomcat-7.0.69.tar.gz",
+    "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/gwt-examples/Calendar.war"
+  ]
+}
+
+Check the deployed application at IP:8080/Calendar
+
+To run Tomcat using Docker Containerizer
+========================================
+{
+  "id": "tomcat",
+  "mem": 512,
+  "cpus": 1.0,
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "tomcat:8.0",
+      "network": "BRIDGE",
+      "portMappings": [
+        { "containerPort": 8080, "hostPort": 0, "servicePort": 10000, "protocol": "tcp" }
+      ]
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "portIndex": 0,
+      "path": "/"
+    }
+  ]
+}
+
+To check mesos tasks from cli
+=================================
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python get-pip.py
+sudo pip install mesos.cli
+mesos-ps
