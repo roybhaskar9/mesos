@@ -1,0 +1,173 @@
+Launch 4 VMs with 8GB RAM on Google Cloud
+dcos1, dcos2, dcos3, dcos4
+on dcos1
+=========
+#Configure Time Sync
+sudo yum install ntp
+sudo ntptime
+timedatectl
+sudo rm -rf /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+#Enable OverlayFS to be used with Docker
+sudo tee /etc/modules-load.d/overlay.conf <<-'EOF'
+overlay
+EOF
+#Reboot
+sudo systemctl reboot
+#Verify OverlayFS loading in kernel
+lsmod | grep overlay
+#Stop Firewall from creating obstacles
+sudo systemctl stop firewalld && sudo systemctl disable firewalld
+#In post flight process, DCOS installer tries to discover dns, ip etc. hence requires bind-utils
+sudo yum install bind-utils
+#Install Docker
+sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
+[dockerrepo]
+name=Docker Repository
+baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
+enabled=1
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
+sudo mkdir -p /etc/systemd/system/docker.service.d && sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --storage-driver=overlay
+EOF
+sudo yum install -y docker-engine-1.13.1 docker-engine-selinux-1.13.1
+sudo systemctl start docker
+sudo systemctl enable docker
+#Confirm Docker is running or not
+sudo docker ps
+#Repeat next few commands on every server
+sudo useradd steve -G wheel
+sudo /usr/bin/passwd steve <<EOF
+12345678
+12345678
+EOF
+sudo visudo
+#Comment out line 99 %wheel ALL=(ALL)       ALL
+#Enable line 102 %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+sudo vi /etc/ssh/sshd_config
+sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
+sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+sudo systemctl restart sshd
+=================
+On dcos2
+=================
+sudo useradd steve -G wheel
+sudo /usr/bin/passwd steve <<EOF
+12345678
+12345678
+EOF
+sudo visudo
+#Comment out line 99 %wheel ALL=(ALL)       ALL
+#Enable line 102 %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+sudo vi /etc/ssh/sshd_config
+sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
+sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+sudo systemctl restart sshd
+=================
+On dcos3
+=================
+sudo useradd steve -G wheel
+sudo /usr/bin/passwd steve <<EOF
+12345678
+12345678
+EOF
+sudo visudo
+#Comment out line 99 %wheel ALL=(ALL)       ALL
+#Enable line 102 %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+sudo vi /etc/ssh/sshd_config
+sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
+sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+sudo systemctl restart sshd
+=================
+On dcos4
+=================
+sudo useradd steve -G wheel
+sudo /usr/bin/passwd steve <<EOF
+12345678
+12345678
+EOF
+sudo visudo
+#Comment out line 99 %wheel ALL=(ALL)       ALL
+#Enable line 102 %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+sudo vi /etc/ssh/sshd_config
+sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
+sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+sudo systemctl restart sshd
+==================
+Open a new ssh prompt of dcos1
+Then in that prompt:
+==================
+sudo useradd steve -G wheel
+sudo /usr/bin/passwd steve <<EOF
+12345678
+12345678
+EOF
+sudo visudo
+#Comment out line 99 %wheel ALL=(ALL)       ALL
+#Enable line 102 %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+sudo vi /etc/ssh/sshd_config
+sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
+sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+sudo systemctl restart sshd
+sudo su steve
+cd ~
+ssh-keygen -t RSA
+ssh-copy-id dcos2
+#When it asks for confirmation, type yes and press enter
+#It will ask for password, give that as 12345678
+ssh-copy-id dcos3
+#When it asks for confirmation, type yes and press enter
+#It will ask for password, give that as 12345678
+ssh-copy-id dcos4
+#When it asks for confirmation, type yes and press enter
+#It will ask for password, give that as 12345678
+
+#If this is on google cloud or aws, then this step is not needed
+sudo tee /opt/ipdetect.sh <<- EOF
+#!/usr/bin/env bash
+set -o nounset -o errexit
+export PATH=/usr/sbin:/usr/bin:$PATH
+echo $(ip addr show eth0 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+EOF
+
+#Now we will start downloading DCOS installer
+curl -O https://downloads.dcos.io/dcos/stable/dcos_generate_config.sh
+#Lets run the installer
+chmod 755 dcos_generate_config.sh
+sudo bash dcos_generate_config.sh --web -v
+#Then go to http://PUBLICIP-OF-DCOS1:9000
+#Click start installation
+#You can find compute instance IPs from google cloud list of vm instances page
+#Give the private ip of dcos2 as Master Private IP List input
+#Give the private ip of dcos3 as Agent Private IP List input
+#Give the private ip of dcos3 as Agent Public IP List input
+#Give the public ip of dcos2 as the Master Public IP in the format http://PUBLICIP-OF-DCOS2
+#ssh username is steve
+#SSH listening Port is 22
+#Private SSH Key is the content of ~/.ssh/id_rsa you can run the following command on dcos1 to get it
+sudo su steve
+cd ~
+cat ~/.ssh/id_rsa
+#Copy from --- to ending --- and paste it into the textbox on the installer under heading Private SSH Key
+#In the IP detect script dropdown, select Google Compute Engine
+#For non AWS/Google environment select the script saved at /opt/ipdetect.sh
+#You may want to recreate the ipdetect.sh file in your laptop's local folders as a text file to upload here
+#Now Click on Run Preflight
+#After preflight is complete, click on Deploy
+#After Deploy is complete, run Postflight
+#Next you will get login screen where you can use, google, microsoft or github account to login into DCOS
+#github.com account based authentication can be a good choice if you dont want to use google or ms account
+
+
+
+
+
