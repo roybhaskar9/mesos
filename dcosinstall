@@ -51,7 +51,6 @@ sudo visudo
 
 sudo vi /etc/ssh/sshd_config
 sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
-sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 sudo systemctl restart sshd
 =================
 On dcos2
@@ -67,7 +66,6 @@ sudo visudo
 
 sudo vi /etc/ssh/sshd_config
 sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
-sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 sudo systemctl restart sshd
 =================
 On dcos3
@@ -83,7 +81,6 @@ sudo visudo
 
 sudo vi /etc/ssh/sshd_config
 sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
-sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 sudo systemctl restart sshd
 =================
 On dcos4
@@ -99,7 +96,6 @@ sudo visudo
 
 sudo vi /etc/ssh/sshd_config
 sudo sed -i '79s/no/yes/' /etc/ssh/sshd_config
-sudo echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 sudo systemctl restart sshd
 ==================
 Open a new ssh prompt of dcos1
